@@ -1,4 +1,5 @@
 <?
+$runningTotal = 0;
 if ($fh = fopen('input.txt', 'r')) {
     while (!feof($fh)) {
         $line = fgets($fh);
