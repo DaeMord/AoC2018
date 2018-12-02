@@ -1,4 +1,35 @@
 <?
+
+function comparediff($string1, $string2,$count=true) {
+
+
+    $output = 0;
+    $answer = null;
+
+    for ($string1count = 0; $string1count < strlen($string1); $string1count++) {
+        $str1array[] = substr($string1,$string1count,1);
+    }
+
+    for ($string2count = 0; $string2count < strlen($string2); $string2count++) {
+        $str2array[] = substr($string2,$string2count,1);
+    }
+
+    foreach ($str1array as $key => $value) {
+        if ($value != $str2array[$key]){
+            $output = $output + 1;
+        } else {
+            $answer = $answer . $value;
+        }
+    }
+
+    if ($count) {
+        return $output;
+    } else {
+        return $answer;
+    }
+
+}
+
 $runningTotal = 0;
 $loopcount = 0;
 $line = array();
@@ -12,10 +43,8 @@ if ($fh = fopen('input2.txt', 'r')) {
     fclose($fh);
 }
 
-//$line = null;
-//$line = array("abcdef","bababc","abbcde","abcccd","aabcdd","abcdee","ababab");
-//$loopcount = 7;
 $counttotal = null;
+$valuetocheck = null;
 $counttotal = array();
 
 for ($loopcheck = 0; $loopcheck < $loopcount; $loopcheck++) {
@@ -24,6 +53,16 @@ for ($loopcheck = 0; $loopcheck < $loopcount; $loopcheck++) {
 
     for ($pointbypoint = 0; $pointbypoint < strlen($line[$loopcheck]); $pointbypoint++) {
         $countarray[] = substr($line[$loopcheck],$pointbypoint,1);
+    }
+
+    for ($comparecheck = 0;$comparecheck < $loopcount; $comparecheck++) {
+        if ($loopcheck != $comparecheck) {
+            $valuediff = comparediff($line[$loopcheck], $line[$comparecheck]);
+            $answerdiff = comparediff($line[$loopcheck], $line[$comparecheck],false);
+            if ($valuediff < 2) {
+                $answer4 = $answerdiff;
+            }
+        }
     }
 
     $dupcount = array_count_values($countarray);
@@ -37,32 +76,19 @@ for ($loopcheck = 0; $loopcheck < $loopcount; $loopcheck++) {
     }
 
     foreach ($tobeentered as $key => $value) {
-        //echo "$key = $value ";
         $counttotal[$key] = $counttotal[$key] + 1;
     }
 
-    //foreach ($counttotal as $key => $value) {
-        //echo "$key = $value ";
-    //}
-
-        //echo serialize($dupcount);
-        //echo count($dupcount);
-        //echo " ";
-
-        //echo " ";
-        //echo $line[$loopcheck];
-        //echo "<br>";
 }
 $finalanswer = 1;
 foreach ($counttotal as $key => $value) {
-    //echo "$key = $value ";
     $finalanswer = $finalanswer * $value;
-    //echo $finalanswer;
-    //echo "<br>";
 }
 
 $answer3 = $finalanswer;
 
 echo $answer3;
+echo "<br>";
+echo $answer4;
 
 ?>
