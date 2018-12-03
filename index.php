@@ -1,94 +1,128 @@
 <?
 
-function comparediff($string1, $string2,$count=true) {
-
-
-    $output = 0;
-    $answer = null;
-
-    for ($string1count = 0; $string1count < strlen($string1); $string1count++) {
-        $str1array[] = substr($string1,$string1count,1);
-    }
-
-    for ($string2count = 0; $string2count < strlen($string2); $string2count++) {
-        $str2array[] = substr($string2,$string2count,1);
-    }
-
-    foreach ($str1array as $key => $value) {
-        if ($value != $str2array[$key]){
-            $output = $output + 1;
-        } else {
-            $answer = $answer . $value;
-        }
-    }
-
-    if ($count) {
-        return $output;
-    } else {
-        return $answer;
-    }
-
-}
-
-$runningTotal = 0;
 $loopcount = 0;
-$line = array();
-if ($fh = fopen('input2.txt', 'r')) {
+$data = array();
+if ($fh = fopen('input3.txt', 'r')) {
     while (!feof($fh)) {
         $input = fgets($fh);
-        $line[] = $input;
-        $runningTotal = $runningTotal + $line[$loopcount];
+        $data[] = $input;
         $loopcount = $loopcount + 1;
     }
     fclose($fh);
 }
 
-$counttotal = null;
-$valuetocheck = null;
-$counttotal = array();
+// Test data entry
+//$data = null;
+//$data = array("#1 @ 1,3: 4x4","#2 @ 3,1: 4x4","#3 @ 5,5: 2x2");
+//$loopcount = 1;
+
+
+//Main loop
 
 for ($loopcheck = 0; $loopcheck < $loopcount; $loopcheck++) {
-    $countarray = null;
-    $countarray = array();
-
-    for ($pointbypoint = 0; $pointbypoint < strlen($line[$loopcheck]); $pointbypoint++) {
-        $countarray[] = substr($line[$loopcheck],$pointbypoint,1);
-    }
-
-    for ($comparecheck = 0;$comparecheck < $loopcount; $comparecheck++) {
-        if ($loopcheck != $comparecheck) {
-            $valuediff = comparediff($line[$loopcheck], $line[$comparecheck]);
-            $answerdiff = comparediff($line[$loopcheck], $line[$comparecheck],false);
-            if ($valuediff < 2) {
-                $answer4 = $answerdiff;
+    $i = dataextract($data[$loopcheck]);
+    for ($inputxloop = 0; $inputxloop < $i[3]; $inputxloop++) {
+        for ($inputyloop = 0; $inputyloop < $i[4]; $inputyloop++) {
+            $inputxyarray[$i[1]+$inputxloop][$i[2]+$inputyloop] = $inputxyarray[$i[1]+$inputxloop][$i[2]+$inputyloop] + 1;
+            if ($sizex < $i[1] + $inputxloop) {
+                $sizex = $i[1] + $inputxloop;
+            }
+            if ($sizey < $i[2] + $inputyloop) {
+                $sizey = $i[2] + $inputyloop;
             }
         }
     }
+}
 
-    $dupcount = array_count_values($countarray);
+$fabriccount = null;
 
-    $tobeentered = null;
-    $tobeentered = array();
-    foreach ($dupcount as $key => $value) {
-        if ($value > 1) {
-            $tobeentered[$value] = 1;
+for ($yloop = 0; $yloop < $sizey+1; $yloop++) {
+    for ($xloop = 0; $xloop < $sizex+1; $xloop++){
+        if ($inputxyarray[$xloop][$yloop]>1) {
+            $fabriccount = $fabriccount + 1;
         }
     }
+}
 
-    foreach ($tobeentered as $key => $value) {
-        $counttotal[$key] = $counttotal[$key] + 1;
+$answer5 = $fabriccount;
+echo $answer5;
+
+
+
+
+/**
+ * @param $input
+ *
+ * @return mixed
+ * 0 = #
+ * 1 = start x
+ * 2 = start y
+ * 3 = length x
+ * 4 = length y
+ */
+
+function dataextract($input) {
+
+    for ($dataloop = 0; $dataloop < strlen($input);$dataloop++) {
+        $dataarray[] = substr($input,$dataloop,1);
     }
 
-}
-$finalanswer = 1;
-foreach ($counttotal as $key => $value) {
-    $finalanswer = $finalanswer * $value;
+    $searchcount = 0;
+
+    foreach ($dataarray as $key => $value) {
+        switch ($value) {
+            case "#":
+                for($searchloop = $searchcount + 1; $searchvalue != " "; $searchloop++) {
+                    $searchvalue = substr($input,$searchloop,1);
+                    $hashdata = $hashdata . $searchvalue;
+                }
+                break;
+            case "@":
+                for($searchloop = $searchcount + 1; $searchvalue != ","; $searchloop++) {
+                    $searchvalue = substr($input,$searchloop,1);
+                    $figure1 = $figure1 . $searchvalue;
+                }
+                break;
+            case ",":
+                for($searchloop = $searchcount + 1; $searchvalue != ":"; $searchloop++) {
+                    $searchvalue = substr($input,$searchloop,1);
+                    $figure2 = $figure2 . $searchvalue;
+                }
+                break;
+            case ":":
+                for($searchloop = $searchcount + 1; $searchvalue != "x"; $searchloop++) {
+                    $searchvalue = substr($input,$searchloop,1);
+                    $figure3 = $figure3 . $searchvalue;
+                }
+                break;
+            case "x":
+                for($searchloop = $searchcount + 1; $searchloop<strlen($input); $searchloop++) {
+                    $searchvalue = substr($input,$searchloop,1);
+                    $figure4 = $figure4 . $searchvalue;
+                }
+                break;
+
+        }
+        $searchcount = $searchcount + 1;
+    }
+
+
+    //convert all to numbers
+    $hashdata = intval($hashdata);
+    $figure1 = intval(substr($figure1,0,strlen($figure1)-1));
+    $figure2 = intval(substr($figure2,0,strlen($figure2)-1));
+    $figure3 = intval(substr($figure3,0,strlen($figure3)-1));
+    $figure4 = intval($figure4);
+
+
+
+    $newdataarray = array($hashdata,$figure1,$figure2,$figure3,$figure4);
+
+
+    return $newdataarray;
 }
 
-$answer3 = $finalanswer;
 
-echo $answer3;
-echo "<br>";
-echo $answer4;
+
 
 ?>
