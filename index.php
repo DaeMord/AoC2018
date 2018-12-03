@@ -44,8 +44,30 @@ for ($yloop = 0; $yloop < $sizey+1; $yloop++) {
     }
 }
 
+
+for ($loopcheck = 0; $loopcheck < $loopcount; $loopcheck++) {
+    $lookfor = dataextract($data[$loopcheck]);
+    $entry[$lookfor[0]] = 0;
+    for ($inputxloop = 0; $inputxloop < $lookfor[3]; $inputxloop++) {
+        for ($inputyloop = 0; $inputyloop < $lookfor[4]; $inputyloop++) {
+            if ($inputxyarray[$lookfor[1]+$inputxloop][$lookfor[2]+$inputyloop] > $entry[$lookfor[0]]) {
+                $entry[$lookfor[0]] = $inputxyarray[$lookfor[1]+$inputxloop][$lookfor[2]+$inputyloop];
+            }
+        }
+    }
+}
+
+foreach ($entry as $key => $value) {
+    if ($value<2){
+        $answer6 = $key;
+    }
+}
+
 $answer5 = $fabriccount;
+
 echo $answer5;
+echo "<br>";
+echo $answer6;
 
 
 
