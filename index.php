@@ -2,7 +2,7 @@
 
 $loopcount = 0;
 $data = array();
-if ($fh = fopen('input3.txt', 'r')) {
+if ($fh = fopen('input4.txt', 'r')) {
     while (!feof($fh)) {
         $input = fgets($fh);
         $data[] = $input;
@@ -11,139 +11,154 @@ if ($fh = fopen('input3.txt', 'r')) {
     fclose($fh);
 }
 
-// Test data entry
-//$data = null;
-//$data = array("#1 @ 1,3: 4x4","#2 @ 3,1: 4x4","#3 @ 5,5: 2x2");
-//$loopcount = 1;
+//date = number of seconds
+//60=1min
+//3600=1hour
+//86400=1day
 
 
-//Main loop
+foreach ($data as $key => $value){
+    $output = usefuldata($value);
+    $date = strtotime($output[0]);
+    $dataarray[$date] = array($output[1],$output[2],$output[3]);
+    $guardnumber[] = $output[1];
+}
 
-for ($loopcheck = 0; $loopcheck < $loopcount; $loopcheck++) {
-    $i = dataextract($data[$loopcheck]);
-    for ($inputxloop = 0; $inputxloop < $i[3]; $inputxloop++) {
-        for ($inputyloop = 0; $inputyloop < $i[4]; $inputyloop++) {
-            $inputxyarray[$i[1]+$inputxloop][$i[2]+$inputyloop] = $inputxyarray[$i[1]+$inputxloop][$i[2]+$inputyloop] + 1;
-            if ($sizex < $i[1] + $inputxloop) {
-                $sizex = $i[1] + $inputxloop;
-            }
-            if ($sizey < $i[2] + $inputyloop) {
-                $sizey = $i[2] + $inputyloop;
-            }
+ksort($dataarray);
+
+
+//foreach ($dataarray as $key => $value){
+//    echo $key . "--".$value[0]."--".$value[1]."--".$value[2];
+//    echo "<br>";
+//}
+
+
+$guardnumber = array_filter(array_unique($guardnumber));
+//$guardnumber = array(73);
+
+foreach ($guardnumber as $key => $value){
+    $sleepytime = 0;
+    $timeasleep = 0;
+    //$mostasleep = 0;
+    for ($min = 0;$min < 60;$min++) {
+        //echo $value."--".$min;
+        //echo "<br>";
+        $asleepcount = guardisasleep($dataarray, $value, $min);
+     //   $runningcount = $runningcount + $asleepcount;
+        $sleepytime = $sleepytime + $asleepcount;
+        if($asleepcount > $timeasleep) {
+            $timeasleep = $asleepcount;
+            $timetime = $min;
         }
-    }
-}
-
-$fabriccount = null;
-
-for ($yloop = 0; $yloop < $sizey+1; $yloop++) {
-    for ($xloop = 0; $xloop < $sizex+1; $xloop++){
-        if ($inputxyarray[$xloop][$yloop]>1) {
-            $fabriccount = $fabriccount + 1;
+        if ($asleepcount > $mostsleepycount) {
+            //echo $value."--".$asleepcount."--".$min;
+            //echo "<br>";
+            $mostsleepycount = $asleepcount;
+            $mostsleepyguard = $value;
+            $mostsleepymin = $min;
         }
+
+    }
+    //echo $value."--".$sleepytime."--".$mostasleep;
+    //echo "<br>";
+    if ($sleepytime > $mostasleep) {
+        //echo $value . "was asleep for" .$sleepytime."at".$timetime;
+        //echo "<br>";
+        $mostasleep = $sleepytime;
+        $answer7 = $value * $timetime;
     }
 }
 
-
-for ($loopcheck = 0; $loopcheck < $loopcount; $loopcheck++) {
-    $lookfor = dataextract($data[$loopcheck]);
-    $entry[$lookfor[0]] = 0;
-    for ($inputxloop = 0; $inputxloop < $lookfor[3]; $inputxloop++) {
-        for ($inputyloop = 0; $inputyloop < $lookfor[4]; $inputyloop++) {
-            if ($inputxyarray[$lookfor[1]+$inputxloop][$lookfor[2]+$inputyloop] > $entry[$lookfor[0]]) {
-                $entry[$lookfor[0]] = $inputxyarray[$lookfor[1]+$inputxloop][$lookfor[2]+$inputyloop];
-            }
-        }
-    }
-}
-
-foreach ($entry as $key => $value) {
-    if ($value<2){
-        $answer6 = $key;
-    }
-}
-
-$answer5 = $fabriccount;
-
-echo $answer5;
+$answer8 = $mostsleepyguard * $mostsleepymin;
+//echo $mostsleepyguard."--".$mostsleepymin;
+echo $answer7;
 echo "<br>";
-echo $answer6;
+echo $answer8;
 
 
-
-
-/**
- * @param $input
- *
- * @return mixed
- * 0 = #
- * 1 = start x
- * 2 = start y
- * 3 = length x
- * 4 = length y
- */
-
-function dataextract($input) {
-
+function usefuldata($input) {
     for ($dataloop = 0; $dataloop < strlen($input);$dataloop++) {
         $dataarray[] = substr($input,$dataloop,1);
     }
 
-    $searchcount = 0;
-
     foreach ($dataarray as $key => $value) {
-        switch ($value) {
+        switch($value) {
+            case "[":
+                for($searchloop = $searchcount + 1; $searchvalue != "]"; $searchloop++) {
+                    $searchvalue = substr($input,$searchloop,1);
+                    $datedata = $datedata . $searchvalue;
+                }
+                break;
             case "#":
                 for($searchloop = $searchcount + 1; $searchvalue != " "; $searchloop++) {
                     $searchvalue = substr($input,$searchloop,1);
-                    $hashdata = $hashdata . $searchvalue;
+                    $guardnumber = $guardnumber . $searchvalue;
                 }
                 break;
-            case "@":
-                for($searchloop = $searchcount + 1; $searchvalue != ","; $searchloop++) {
-                    $searchvalue = substr($input,$searchloop,1);
-                    $figure1 = $figure1 . $searchvalue;
-                }
+            case "l":
+                $asleep = 1;
                 break;
-            case ",":
-                for($searchloop = $searchcount + 1; $searchvalue != ":"; $searchloop++) {
-                    $searchvalue = substr($input,$searchloop,1);
-                    $figure2 = $figure2 . $searchvalue;
-                }
+            case "w":
+                $awake = 1;
                 break;
-            case ":":
-                for($searchloop = $searchcount + 1; $searchvalue != "x"; $searchloop++) {
-                    $searchvalue = substr($input,$searchloop,1);
-                    $figure3 = $figure3 . $searchvalue;
-                }
-                break;
-            case "x":
-                for($searchloop = $searchcount + 1; $searchloop<strlen($input); $searchloop++) {
-                    $searchvalue = substr($input,$searchloop,1);
-                    $figure4 = $figure4 . $searchvalue;
-                }
-                break;
-
         }
         $searchcount = $searchcount + 1;
     }
 
+    $datedata = substr($datedata,0,strlen($datedata)-1);
+    $guardnumber = substr($guardnumber,0,strlen($guardnumber)-1);
 
-    //convert all to numbers
-    $hashdata = intval($hashdata);
-    $figure1 = intval(substr($figure1,0,strlen($figure1)-1));
-    $figure2 = intval(substr($figure2,0,strlen($figure2)-1));
-    $figure3 = intval(substr($figure3,0,strlen($figure3)-1));
-    $figure4 = intval($figure4);
+    $outarray = array($datedata,$guardnumber,$awake,$asleep);
 
-
-
-    $newdataarray = array($hashdata,$figure1,$figure2,$figure3,$figure4);
-
-
-    return $newdataarray;
+    return $outarray;
 }
 
+function guardisasleep($inputarray, $guardnumber, $isasleep) {
+
+    $datetimeawake = null;
+    $datetimeasleep = null;
+    $retval = null;
+
+    foreach ($inputarray as $key => $value) {
+        $loopcount = $loopcount + 1;
+        //$date = date('d/M/Y H:i:s', $key);
+        if ($guardnumber==$value[0]) {
+            $guardfound = $value[0];
+            $datetimeawake = null;
+            $datetimeasleep = null;
+        }
+        if ($value[0]>0 && $guardnumber!=$value[0]) {
+            $guardfound = $value[0];
+        }
+        if ($value[1]=="1") {
+            $datetimeawake = $key;
+            $awake = 0;
+        }
+        if ($value[2]=="1") {
+            $datetimeasleep = $key;
+            $datetimeawake = null;
+            $awake = 1;
+        }
+
+        $datea = intval(date('i', $datetimeawake));
+        $dateb = intval(date('i', $datetimeasleep));
+        $datefulla = date('d/M/Y H:i:s', $datetimeawake);
+        $datefullb = date('d/M/Y H:i:s', $datetimeasleep);
+
+
+        if ($guardfound == $guardnumber && isset($datetimeasleep)  && isset($datetimeawake)) {
+            if($dateb<=$isasleep && $isasleep<$datea) {
+                $retval = $retval + 1;
+                //echo $retval."--" .$datefullb."--".$datefulla;
+                //echo "<br>";
+            }
+        }
+
+    }
+    return $retval;
+
+
+}
 
 
 
