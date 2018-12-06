@@ -1,153 +1,117 @@
 <?
 
-
-$loopcount = 0;
 $data = array();
-if ($fh = fopen('input5.txt', 'r')) {
+if ($fh = fopen('input6.txt', 'r')) {
     while (!feof($fh)) {
-        $data = fgets($fh);
+        $strip = preg_split("/,/",fgets($fh));
+        $data[] = array(intval($strip[0]),intval($strip[1]));
+        $maxx = max($maxx,intval($strip[0]));
+        $maxy = max($maxy,intval($strip[1]));
     }
     fclose($fh);
 }
+
+
+//test data
 /*
-
-//Test Data
-$data = "vDCccZrRzCdmQRrqqQtbBTOvVoMJQHhqMDdVvmYyjlLrKkRBRbBrRrYqQybsDdShHVUsXxlLShHWFETtefFPpsIiSfqQwNWtTwnElEHTtheLCWwZzcVtDdTqQQEeqCcvNneUXcCxUuEeDlgGLdurRjTtcFfpPRrUuHhvVigGVZzGLljJgqQvEUjJRrunNXiIkYyKxzZGgnBfFVGgVvUuIfGgOGyMYyjJmSnNZyvVYHhvVzbQqbnNBMBNlcCLnbmiwWIockKHhqQmMCkKOBwTfsSuhHUFzcCqQTPpteLmMlEZLnNwWVDXxJjdvRuvyYVYwYTuUbBtypPNnWcCgGCcKksSyzZQqYdlkJjKyYvVLIICciiVKkvDiLlzZILIiqQliINvVnNnnNGgjByYbpWwzPpZJUuJbBjjPkKiWqvVeEQIBbigbmMunGgtMmeEtIiowWOunqQnNNUfFTEeSBOznNZoCHhcsvVLsoOSNnlSNnqQyYltTLGJeEjuUkKfnJjNhHqgsSGgGnNRLlrQZzFBNWMqkeEMhWwHEElLedvVDeoHSshJCcUyYKkuUuFfhLDbBLFfldkKEMgGmPbBpdwWGCcgmiIMDSpPgNLkyeEYKlTtBbpPLwWIxEWweXhqQzZWZBsHUuhSdFfDtDdTYyPoOpbUQqXxuzpjJPslRrxHIiQPpqBKkbzZeEhTOonnWwNNtKjILgGlgFfGVTrHCcnNYlEUuepVvPLyhlRrNpPnDhrRHkKCRrZqQzcWHhwvgFfBeEbGcUuCyYBHhbiBJBbLZzlJwWGTtUuZzgZSdDTtsWwDdxXSWwhLlHxXIibRryVkQqIiKJvxXbuhHzZUBVZfFjMmJzjIiGdDLlgyOqQqQYMbdDBqjZzyYJePpeElkKvtTVLEebBXBfPeEzSscCkecvVCEmMKPNyYnpHyYloIePpEgGiLNFoOpUuPfInQqmMBbXxrRnNumCcMUqOoQNUOETtDuqcCQdDolLBXxqZzQwbnCcNcCeEoOMbewWEnFfNMmBTxXyYxFfjJXybIMgMmjJguUQqneEIBbLlQsSqDdeeEhunNUPSspNZoxXnNLjYbByJlOUCBbBxXqeEpxYJjQqQqueEKkUyIiBQHLmMlGpPrRgKekQEuHqcgiIGIiCwsSWWiIzJPmMQqTQDdfFLHOQqoZVDfeEUulLYObOoBHUXqQiIHkRvVrmcEQCcqeXrRiouBbUOMYymTpvYtTyqbBQrQqRmTXgJUuscZzeEjJCzZuGgTNniFQIxmVvEZiIzDSKdqMXDdxmRiiIIrojJYRrRryYIveTiItELwWhHleXxuUXVUEQqBbQTRrtWwQqRrZMmsSJkKjvdDVPWsSLlOGgoILgsSGSXxfsSFwWDLPZTDTmMttPUupZnIiYhwFFfGKkgGcqQXygGZQXxqyWwYWthoOHTCTwWtoyYOZSsEePJjpxXqQsSUTgBqYysPyYpuUSbvVnSsEeGgorRSSTCymMpqvobBjmmMMvdDuKhoOgXxGTVvtKUukzZrruUSsYyFsmpulUtfctTPxXKkvyTtmbMhHmJpxCTxMKkzZMuEnquUrRiIUuiOoIEeoeEYyOBtjfFJTbFyYFVvGFhguWdpyYbBHlszZnNiHttTCeECuTcCtuxcihLifFwWkVcCvIiVpXxPjJvPpeyZRrrRDdRnXXxFuWwURMQVvXxqSWweEIrEzvuHCpUuUqlLQMcgXMDyPlLCeoOEcpDdgSsgVvTtGVvtTGYMmeEVvBuRrkYSsfLlFkKNjgGJnhBbIiHoOBEebBnhHwekyOowWTwWmPoIKkDLJZgoOuxxTfFgBYHdQURMXeIiLPtLlBlLymMYbjbBCwWtxXsgGSqEpPebBERGmmmdQqDMBbMLlkJNnJjpKkkVFfvQmbBpIwXuUNyQPHheUlpPLpQqlCmDRrmqhwrpgLlBbGzSXxIimJdiITtDJfBoZVlUuLCRbCchjtTuUHhJHqGGdDeSsEwbEOcCkKoGhHEehIFfNFDPQqyYpOULlDHsShQzZJUSDUrOweEvIntTfFHHhhmBVUEjOGIjlLQqjJlLmYSTuUmLZsSzDmTtMcXoOSsxXinCwWcNPpGwxgEXxexXBLcWTFfTtNLlyYRnLJNSsJjumNMzZmrlFfLROMrCcOoBUDdunOoopGgMWSmMswoOISsihWIbBBWpXQXxqkNnEPcCpFfUuNeEnenoONgFfGPpSdmXxfzZMeEmghfcgbDiIyNpQOXxWRxOJsYDnNpvnGgEexXEwWRryRYWTRrwdfFQLmTNXqJZnNcCdbBnjriXxNnIuFfUnNRXGgxFNnfEhHFDdfOoeFlbFWpeYyEIFqQfihsqXCcxQoyYqQfyHhmXLJjyOWMDdQBTtbqlWwUHhGgpLlgGpMmyFRidqeSlCVDfnfFzPOYyuNJMcCRezZESoXgycPwWTtoDddnJLlnNLxESrRsbwMSyiqEnFDEcdCBkBmPDOHbBhHhCBzxYSyKdiqBXqVvmsHhSOHDhIZbBHhJtTjVBgGBSnhHNDzZdhZzmIfgCpIiXZrRMKkmjJDEiIRoOrnNkKwgTtGmtTMbBJjWfsSydwQXxJGgjqLlMKSfFtkBleEUPpuwbhppIHwToKkTVLBDXSsqUqtvCCRrNnmRrDxXvCbBFGKOLwWxXCsgcOwWqQypquoOUQEeXbDdkCZzcKNzZnBxfRrUwWuKcTtCkedCmIELleLlQrBisSKkIYyXEWTDdwWhzgGpPoHhOZHSsbBuWwYyyhTdDfFPGZzOoXDszZSemkOGYpLlzNBlsiITgGtlLXQMWrRzfSsEeSsTnYQiHnhlLdgGlxbSpkKPjICKhYwOVvoWykGgKHquUEmfWwwWPHhhZlhLBxhLlQUUtTuiIuWwuiicgcrUHhoOuRbleEjXuiIvsFIibBBcyKCfIcSNFMQqWPEVkKvFWwipuURdjJIfgKsCkZznNDJPSSvjgGJprhUkQdZzgGwFdPpyjJYcjJCDhwTtUmgFfwIUpmpmMPrBShtYfjhpPiMxTSuZPnNpHFHhfQgeEGqQHyRqGKklWwBHxMhHCrRVfcCoFMEekRVyYZbuMmWwXIkuRrUKjJmwBbFpHuUtsCIuHbtThZtcyYUzZxUucCoMwCjWrqQZfWTOobmMEtTuqJjhcCHqQOonZLZztWUrkoOfIkuIxWVEKYykOjpSXIsUzdDZsSOdMmDNFfNgqQuUGQLlqYxolSseEVGgvNnLLlYygDcCwnwsLlFedDWPprRdCDuUJeErQumNPCpUuRrzKkZPKqeFfEVZFfPhusqzyhXSmLlQZoVvOzquXGRoipbQrRqdvRTCKpqRhRWwKojJDvVcEnGkuUKPptlLlLdHWFvGIhHiguLVmJvVjMSkRhwygzZOgGJxcsSpQmMqYnNyPCXyxlXyYcwvXgKkGnDcCsSLUUukKuiFMPCzjEeJZEgFWyfjJbWnNCfFcIoOilyYDXxgluJjOMmuOjJvsSXgFKkfLfpdDPRuMmUdDyYkKrFNnrQNXyYYDRwoxXjJDersDdOvQtRBbuTnJjweMsiPYydxeZZuUFtcYQlLMkjJtzPzuRdCkSjpPtOoTnsYbiRztTwlLPpMPCccCmDjJdPHGOdlLpPfniqKkTtQFdEiptQgGtIwCcWiigGlveUNnhzGgOwEODsIuUHcPIGhqBMHWDddDNmsdLTtiOuUFBdbbNeEgjzdRLwKkvsSvDieJKSsCUrqLllGMnFfPgQTfmQySTNIcCQMcCEtToOpBkwxLTiItgGwStCcOKRsrRSBXPMpzLGDGgdhzsPRWsSNEeMfFmGCOugOhZzzFfcCkWwFfxNeeQqvyPKYwfFmkzDuYymvXuUzZxIhRrHgrcTWojrDXTtooQgsSppTCOocdCDTttuGmhuDnNTpRBbGBDfyIXxwwfwbEeBoBbOLCiRUHhGgunhCCchdOHGNxvVbKMNqfQERrLRrlwgIInXIlbBOEeZhorPLlLFBJjxmzBJOZbBPVhHrYyXnfzrxXfKiIkFGIKkitUuTiIUNbctwWLIildeXucykpEjJdLBcSMlwWRkWwKGzZQYEVmszzZMoKwdOogTkcYoPUZvYyrQClLZdErqBfFICckeEXHhxDCcLlNJCEWweUhVQgGRQoBjHhPFfbWHkgedHEehDLfOHMrthsdHoOFskFfKceEmOwUBbovsqQvvwWVEJmhosPvNnLZWRYjJynmjdXFDfQYJjyLuFdDQwcGHwWcDGmMFHbByrSsRoqMmCHovptTPVHqlSsJJjJRuRxVVRTgZxvVtQlLNFyCQoZoQqSsVSKdqxyzYCkKouehmvckuLXsSRhHrgfmrgXRHBUMmSsuIogZPNEleELTsigyYGRfkGgKpJjPzZFFUufpyYhjJoTtHLXxlhUykcJYnjJNWgFfTIKgImzZSrRNkKmMxJnvNGEIjcBysSJooOGJtCnvpplHFkXPuUdOHuonHfZLrRlzQmxXNkgGKnzGhGTcCtgHHEehVqyOyYocCIetTENFORoOdDYYKeOoEkTCmYoQlxZxZueERxilYsrIstTqBbOoQyUuYTtSOljMvzXEZtqQcbNgGnKVHNKktCNOoJwjSsrNPpwpkcCXHBbxkxXImOrMiwZlfCkbBKQHhEsYqHSmFYyqvzoBEDhTvLlVGgtLeZVvgJXfBLwMLlzZXXEeuOoxIlvigyJtQRTRQwLwWxUOmMokQqVEIDFZzcCflPpVvFmLmLDONywWYngpuRcKBUuhHggSQNDgjXbfvucCxXfvXbcnuUgSTDHbvxyOMvVCLKXYTUutruqPSVyQqYnNvXXeEWweEwvzOWzZRKUxeMWbBmwjJvbQsWbetMIBsBPyhHYyYeEBHOoIiCmVvMLxuMeTTOVzcCGbxvitTVHKuovmzWKzxXvtlhVplDcSeLVvnkfGvYxIbXLInQhHwYnNqUhcrfCsmSbBcCscjIXxGJjehkoOvVkLlTIQNqDtfupiNOWiOoIDdyfvEIiiZGgEqLvXxuETRiIrDhHdoHEHCctkGuUkYnMEeBNNcWwIrRppPMXtvpPVCUwkKJSsfdbZCjDdvVjPlthZLjuNXDdXQqGpEGgepJjgdOmrOQmUiIGMTRrtmTteZZzrRXMQpxXyJOortkkTdDMtcCkDENuUWjxLnEQJEeLnHKoTkKtBpTOtDIiRRBbRJqCoOeEkSllLRXWwxrLEicnNOoCVFhGhkdkPWWysfIPyffFPfeGUVODkdbBJjHhHDvYSfVrRKkTlLZztlnGgWYoGUugOoCPpQGjytJjVvoOrLCeBQJIdQKkrEwLwWxlSbtixDxIsSiMTtuUJdiYhbByYrhwXxgUILpPQqSsTtCzBHDdQdDEeGZEcPxSeYzxKkXqMJZlEjOotEeTWzUFYOZzVmFXrjfvkEyYwjEoehLzZoNUytSTUXwHFbJQqKrRRrbBkWvqoSsqcCshqHHhhQXJxjLDqkKxfzZFPUiNhsJyZMwbBWXuiuoHOgGoSsYczZCZYFifBVvbTtdGgmCSscdWJXEofzZFrwybwLMmfXxpbLgsSLlXEfyvuOoToGgEsfRtKjedxQiWKvkvVUXCkKCtnufFdNWCBsdRZyedGVPJMBfoETijmjUVlnwpPzzsbHFTFsJTNngXCgRrNyvGUQhVuHyUgGwCcwcYlPhMmHtYwJBmViYGEBbjjpeEokKJRQOmPcugPDdpGUmhzYGgyOeSIhDcrkHhLWwlPOmCcFfjPpJMxnYRclfYbOgFWXFiyyYOHsymLGNkKnsqPBhHqegWwfPuWSlqULVsLlUGnMuzlLYmOjllLLTPjWsjFppksRrSKhdyfdQZpvjyrOvYyVnmHOFfPpkykWUJEgGsGjseLlkQEKCLIoOtXXxcmGzXRptCGSyMexuZFNSDKDxLlXdpjmsQqryvhwFxsGXoyJjcPZqKNjIcrUiwIVviWOoNjjsSJHjWwyVbFLiutRPpBKcChPgDdGRuhPpHeEUpKbZBtFHdoErkKReZvVpByJgONsnCwTGlMcCkwiuOJfHQGtTCwzUkxgmPZlcxirQDjgGumjJFMRWclOnnrgPeEZCnEzMBdmiGhzKewZOeYPmiIHYsXKsCcdNjtygiMmIMjzYILlSkGgkKKVUfEIbRrtfriLlIRxtybCoIuJEwEoqBoTUmMuDsPpSdfTZeEztqVrqVzioOFfIdVvDyDxNYurfSIJjrTtzkIDCJjJsUBFpZuJfqiLCclcDdkJTqPvlLVYfqebgfFeEGRHwxyobrWwRzRxNeEzptwKkWHmZbjgihkKRgGocbwqJwWjQvKIqINDChJjHpXqDnoUREwWhNKMlPjfFFdBCcbHhVlLLCCMfXxIGBwoTkPOwnpPwhtljQjJdyCjqYrHhsnyQJkeEOTtXiCclDkBbuOZovTXikRsGWxmlqrLKxLWgDmREuUGzELwTkUuPEBLSItHLpPLMXUtVvPzEkqhHQVyQdBTVmkKElihTNPTrpNKJjWwkEYZsSzvusRBjSFkmHhtxoOXgsUsSWgqjYKVeVIFgrHXDSdwqQcylLlsbYycfFCfJNLOPwnQDVwUBzZbYleGkusyfSEorRzQVpJMnNVxdZPdZbBzfViJOvJcLckkwIifFQYkBTpmZzSTQIbQOHuUpPKkFrRfGMOHFDbBdIifhobGFfXxTBwyYWbDhHdjLKEwSgvBSWwxXUbQeECWiiIIwikeRMuXxUXedCcyKkUumDdjdDGEjQpNLhpgjqmdoxoKgCnvYgxzyWwYXTDMmdtVNmIkKXqRKghfVzHEMMhDdQuURGzhYypJWgqzLVJGQyYzrRKIHhslLRuYPNkWXHyZkkUjJkXIZxrsFsntTNjedlYyzedsPrbFfsvBJnRpCQdDhBbKkpftTlrfEZrGULOoiIlWhpyPtBzZUNtYJrigGQtmIigXuUjUZzdBrXCKYHcHHJueoUPpuOEUueZrvjJVGJVLSPmVgHUcyVJXHwYqmVPZtfUIBNmckUuEwmnFSOxuDbBdUZXQPkdPHnnkvdcPljRpINqsGjqeRkYoxghHpLRyVUDoRzcYkUwslznyEDnLXLrgOKryvKIbeOwBldUpbTDoTQOhIinDDLTmcbRtlOUPXDJGkoQbjsRYIiynMTUJKbQcZxIiXRzkKvLqFVGifnvvGzQRwvmSDuFqQfRIpEhDdHBHGNshHrxnEKDXwzpYrHqTkSsKtiuUIEcORpnFhMPsuiESKfblweEbYTkInWXsxfFeVHzsQHLpJpbmrNlCVkOGYebQqeoOwgYqiIQCsKuvsUzMvuWzywCHjZIuyMbEBEGPDHyDdbBffFqsdDJjwmctTrjgYhGHWElDCmOQPgiKnvQSSfmlNuNwRbJJKFlPSiyqHPphtcCQYfswnMwulXpQfCSFNPHzZVvhcKkkeIoXipdIvfFVgvjJEtIhhHJkuPodEprLJYgSUIYyEMppTCZIVntgFlUuckmLxuopBDEHrkKnOoJoWbRGLeTVYqQMHvGwpmPpTBEJIsNnlfQCDvLHeitnrrRniVJtUnrxXwhHBCMZXoZCInWoYjtbzShYZMtJeUjDdqxUmjldDLJgCINTLFhwlZzfxwwCFnqhnMcCdeXxEDmKkPQJdDRxkNoquuLgKOLvkZIRyixXXTXIFUclExOUOoudkpPywHCcoomzZMMuTwCUXwoboDElbJfQpWbzZBGhIZEgSsBGLJhxmiOsFOxXWdUlGBFgXtDrPzgGetTqzdFtbqKNGjOCuQcsFgoCfPHWhksuUEPMFDHhSwImHWBbuomURfEHoRwgGKkyvVQZgLXEVLLixYCkXthnciBewXvoHZieVKrKoYNOzPyCXiIkQKwITvLlwGNdoSmWUwZUGvVgMXmLBDgmlFXxItotVVocPzrXCLSDNwipirZRxZEHfYIUuiMNlJRrjtWICvVQKPHVfiIBhzhOdIpgCcXQHUTtRndWMwVOwbQWbDRbGkGwWqJjDZvswukGIxsTwWLwXjxUyHhNnfCJpsPiRGrRZjJOOSsCxZJIDnNQVbSUVfBrQJHhPgGEVrrIdSWfVdJlLcFEJJHgLnuNmUFtDhrGXjXxpKkNhmgSwSJJqQjBwWZRrUjOhHEqkYLlEZXwmmCiNzZBcSYIhvSHTcnULkbWCyEfGVhnrXoOmNIrxdYskYotHiENBmpiOontYygqQGRQSZwsIYJjkKfWwmMXJBSHXlzulRHtgSHqbElOjRPeEsxwmrUlvOGMiIRHvVzvlLkoXumMUYyPMyyYcCOoCccCBxPZzRrXkUdoOlCsWNFJmqyIJkQBgGpPdFwgbtZqOhiClbBRwWbfuNTMsrinLEkEehRbYvfrfUycODMQsnVvuFLeNijDJppcLlOsVMrIMGcHTvVthcWKdCtwBhbZbPweEWFHLvFPFmRxDXZzqizYyZwYyOzNBssLkregZYcyYXBdtJmSqUVlVzOdDRRJjrQQcCRuCKkXUjFcXVKkoEbLpHnHMVXlopoFFjgsjzXXNfwDlFtWXqPpGEJtPiKeqsyYYZuwKwBoLpzWqKoOYEYSqhcwfPhElTgjkiGQbnrKepJlfLFzzxInSqQIcxXVEtYOoeDjwMtBnOhTqsVcbSMiMIkZSMJUGelyCjJsrXYyzPHYBvQBHThLxXvgkByYbopCtnSyCiGCbpqrdDREJRulLtoOrZjljNnmHKkubQlqpFmqvFWldpoOPSrYCJJhLqJzWZZSOYywehmQnoVZzGusgIXrgxeEleBbEekRDWFfwSsCzNswDjegGfyVxlbfFuGgoWJPuENqoFfXJuUjMPpwcfYJeuUEWswWzCxflLLiutunCXtuIowlmWkeBZIiRZeRrJxhLTtdHvubBSZHDNvdOohUirRFhOJhOcuJdXwBQpbZrOgXjiWjJsooYSiQpLxVMysQyZNCBHYpPNSUgWjgLtytINkspknvUEUqFJohpzrOSsNUVfPJQeTxgkNSOhffwWBJQbzFtUfiWgirXgGbPdrrbEwnfiNwKSfDoIJjkWcRnjqbHhLbqpOfNjOPpxjsGrUYejngFtSybTdrXCpsqbKJkCXhMoOmHGtdSphfGcGNgGOFZLCQxcqTXxzhlSFMlLUcDrSgEVlThHtfPYTfjofkVubnBYdQJdYzSQxgzNEgMzHihVuUnsCwxcgKimmWwdbBIHDdTmzxCMFcCNfyKoXEvVeXkHwddORLlOYoiwkTwZzWZMlBLyowsSttxESWvfuEQJORGuTthlGtoRrOTDVuJiQhWiIjGrRPyfciGgteRrENGttGMgGJiEZJBukFsxTnFWFmpIVvDXhnmSyYtyJxIzYZXzXyohFrkbVJXzZeudLeEKKYUClxQqseJqQmzfnywgPTFJcrkKBnnrrlLvheRiRLYlEqTIkWJSKJktBnGdrlIRHerYVyyYYxGZVIYPBbJVGHKgiJgdvXUNHcxbIsoeSrHrNsdvCsSGnECuEVECCJjqzhqLlkMbmcLlCGqBQZhyYHpTFQJPhstkgWcZzgkqQrYFzqzYXhdkKDWqFIXcCxiFpkMBMSXmVxVKDBxcPYTupZDIopJjpXWKHLSKxTymcCtvSmVIGiuDdSVjQgHuOMeRopINJjMDMFnwFxZCQrclksTbmIhiCXxxBllSQKfBbzWGOpEGYuQPukgNEQqeVPkvetyWpOGLoumJjBVSgGrQHLOoIVNuQCzJuFcfwyDNrihVULNYfpEMvWwFmgdWPvlYWpGYZYUEdyYrSujTQCUBbhUuCKGChgJpMxwzFePrneOrlFOfRschEpPXSknfKEBKKRyKgtjqQsWFfPxEXxevVRFiYyIWsJQqGdUYITySsTfXkWwNCYyjOFjjJZkcTdjpLfGxHxDhQJHLbkUOdESMDsWtIGvVBydMIWNRdPvneMdtFFSJCghQqlbLyWMkeEVFRByNuUCrqMOchkyFtiOtIHpELWKCCODyWdCNQoUyXZrIiZKOnzhOiOQsuYrWUuzVPtWogpFqpXbkvOgZgJIVkLKWJOrmLUYFTTJJgRVPyoMllkBtuGnzbZmtINrNHHwBiCookfURrpPgSdQspPisPYHJSnuEtSLwjmmlXSzbPQScWqfNZJyqgQFYDIKkocmjkdhoEIQSSqvpgbnNJSPsCMDkRvPjpzyiJGVmuUFfvVGmHyNOUZusitOXBFUtdWwVVJhUTCCpXHxBDybGcelhEVyuhJiFSDQunpIWwWnqlRWtBbushnyTTLBbOYeVQlfYklSCSsczFxxJjyUznwSWWbvIopPrJYsStGgcgDpdsfFSDPXMmxdGChHTyjROiVBwHNnhwsWNZuYXXfZsLnNKyFLqvEyoIilXLlxttYNHSUTwrLQNSswiPNUqdsfIjHUYveHLECgBYdMqQmbvFfVXhxPcctuHjvvDTufbxoTISUzuonYhMgMvgjIYZPJpVrKbBdmCccSpsjBGPVQssqieOHDKJMCOidzZyfqGQYjznFQwcCCsqpBZsxLMMJhHWlsTeUNsjhypSISqDsGuFZzKOOcIbWhhkKnRniTMzBZNgUTbRrKLLmiIOYpvrGjjttfyulMRojwklKvijGzGoVKBxPQfPGOwTpvZwRyUSqoIoHZNgnNGotTkzRzxYvVuOqncDwYdocckwlePhiToITfYKHtTCoeEmQRcNnnYbrfvKmwYlBZzLHGcSsjsffTDmENVpDrnwimDYbgiTwSdmsOrdDRoerRDDBbdouKBlhjqHdXhCcXgFlPJDtCKzjlLJJfoJmMcnKxFtYtiyuDgjSwfrXphHqQwSJTGGfFgkyYYruUkhHkbekFNLllLnOoNKsxeHCSrFofrRLRoENRpEfZsSWXiImPjGHNncgkcHucqtJUsRDeuyzygPwyLVpwDGMfEevVWwUuVmePFynluvHIRndYWFCGgfUjlLZcqUnvilhqRsvbMSsUOlgoPcCwYTEVKpvnGKUpqdpPDUygePogwZFkqsLLbXcIHiMBtSKLCRqczXfWNfmdmJjniPOrEmdDoUhGqJvsUIgzzZZivMsVTVvMYtXzHhZkslIihkwxPPOidzPUtypCXbdkvXvMxsmbmCcKPfIJjifQivVIwHxyZQZfyRKGCwGwSsWKTSeEHpjqftPzNnqbQgMBmKQHZQmMccevjNnJeUceMMmmNgxXcVDSnRhbBRsEOSiBXChnuxVDGjIGkhgvjpyivrRzgXvyREhriLRDgNbTKjksjwKittMmTQeLylrIrEHLlVRRNNbLlRCjftDdpGWYNFZMjESXLcuykklDUExjvtODdhHoTBKRfHOYxZxzyZiXjYTsqFwWfQMNHxdiPMfwfNtXSfKUbjzeIjBbmCqEgGeQcgvVTTgnTICFYpgJwHqIjUvdgLHrRUCcgrojqeUFVwseZzXTTsSWOYlbLmzuUtKBTtbWIOyorUuoDDWhKxHhxOkYFnfmcXZMtPOophiDMMIVvkGCXWcSNvHIhZmGenZGXqsZyDjqDybNBUvKFOJFtyvXxVxbBXpFLvoOeGSssRdCumfsLHZIitDdQTtCXqclzfongCgFHPsDKCckTgxzZcKjkBQSPcxRDtBYsTfGNCcJEyuRgSJXoJnFoPQBlBQJNrCwKiOdFskWnIFNWeBRRDpBxRIGwIFuTfZBqjbFFHosnKGXtEqKLlkjSspFvunVvoRZPHGgOjfQueuVNKPSKniTYTlGJwGusnyhbcnCcKkzYqSYmvXlPQqnNqIsyOOSwIJxGoRzBPqbWxDjUepPECoHjoHfIuHDVndhKkzsUVhDSslHXjEzrzbEKwMeELCcWOiUyYTxcgGNUTUIlFXcnNZSwfFjyFCCJjcWmxxXOQnYyeUbBpjwOUBQqLXvYFEJdWSnZcdrKlLELXGRKkxiGSUgxnNXvONqMHEWoPpYyszzwZjQlHjjcyRsRpPrDLwfVQMfPQLqBUhMFfJLJzRTJjsSFfUrjeCcQPBcgIcYsNTcPOKGVxXlHthbqVbyhpZxRJHhjSjJcYLEgujmszKimImsBCvSQLltHoNbTmWJdEyTevjJCisNiXZZflNnVvFLjPEkRNBqgIKJGtLeHpFWCHQsmbBMyeyQqkQwZPlObWkuopPOUWUJjzySQEkIpTjXoOxegQxwTfkKLdWFnxxZJSTtGJffOPOLxvmhNhTtPlBeXBbxOvxCfJuxcjJDwWdUrqqFfroZvOoLvuQsMGgjTDbxwWCyzGERKlSUuSbBowWObnZoUuWIQxdXrMfpfVlhfKkpBzBHbWTclRrLDPEepkpPwCCgmiRmvSoCPPjdJInElfUNSqmdoCYuFRFVyBrHKelNIRSmtnUFBrLcIHoQzTBrRGWfDbqKjiIiYQMjfnwSMmcLHdDhDuKxUupXbYmUujJpEeYyxOKVZdDhrmgoVLuRMWXSprJoiILKkeCCmMccBQhsGThrLUZLxhsbjxFyiSWzsDdqrTNIPMbneIhTOyKSyFfDXRcCinMxqQRNHvgFeYcwBKluNCthsVHiysCbnIcMMWxzeyKQeoBbJuCcpcCPuUzbjsWsGMHnPJxgRHdTfuZzMnUNlGhjjefCjDvFwsDiRRvepjqRbFvusbBBvqdijzXcoozgrIpSPjcPpFYuBbXJxWltSXigKUWSVzdQgKgBrdBwqBWovWmwDSsNruhqxGPiDoHZHbKkFvhpuUkqciwTLnmyFhezXtdyuRrUYDmMTrzRIzZPIWsSndsFPlLpflcxRZpCOEPpedkQqKDvcZzCvTOTifLMGdblMxmuwWzWuwMsODoYyOsSnZiIzgWVtiWkBbqKgGxcYpZonyOkRkvEIzhOVxWoOEbICNHTxKcyXIllRrvexlGzqYWIiwWrOheFruMOUwhMiWskKymMYdeDYCrRcydEfmpPpeSKEehHHHgGhwhpFIicOGfSCqUcoJgnkQBTfDZQbBEZpRdTxGfbgLuDwofSqQoIMXDdHjlgbbeEBGeziHgbBwPqFjBLedOBOWxucWtUmodDpPOXxOOhWYKDoXexXpPLCufixtxqQtTIJjYriVvzKVlokGlUUQOZznKDdtTXSsrjqpNHQNfcWWXFLWHfltVPpvnicGMuXQJuEjTmzyHsZBtUuTTJyOwNVviczOxzQqmmuUMcbJjWRNuRrTjvINRNTIEhlVdcqFLCcSijebNntvZzVMPWgVhmyvtElgnNrBwOjNRhedbsSPOBJGgjbUXlMKCmMLfGTNvizctPPmeqQiusGyjlRPeeEDOpUKjhHHiTeVGiDPIxOiEKCpJWwjnfTtsHBbhcFqPxLjJUWmXxNWSFyqsmMSTNnpPQYIspLfkjoOjBrWnUnLMFssqVNkIGpqoMcdLewhgHjJyGJRCMWQqSQFlLYhdpgebeBmYUizJhcWYZwsSUVmZuSVUkScTtyGWEBEygoKvcLZznRMBPjPlhvVqSsSZhvmqKkQMEdzZWwfFDXSxwNiKtyBbBWLBFkseIUSpmHfNProCeQhRyPZWxsSdkeNXRSnrRghbpdDPePirUdsMVWrqZUEeuTtgVVNFIgvfQgyZzYkKGlVnNZrzCLlzUuZlLqBkjutmNrSJBqOzZKgjdxpWwuoLTrBCMtcrRClsSddNHoqtOdtBPuDLbWoEBikVYHhRkoXxGRlxlNdeYNZLSWuKyCZrOduvYrlPGXOyKrEQJgSQniPrJLpCDVKNNhpDKpqxzXosfNMWnNeKCMnXxbiRruFTzpvMQHhyWhxjvYCuhGvMpslvjVvgRzEUjhhXxqQChykcxRbDuJxGMTqIRjyTnubTpYPHwugRzeFRLFPHWwqcPrNjbVSBRpSDEZLDEJSfSRXzixKuIOoiKKzYhxwKnpyUrSikZqgjvlZQGwjPHZgruUqHmmehZWwvFLlHGkrQxiMnvxiGgIZXGyVNcGkOXODMOoQJGPHlnPqJegJlLMYpPDExmrERrKIcqBusbVGnNsWeklJtgBmgsgGShoqBiqtsMPtHhbKyqJjjJWyYKKClCjVcCojIvFDpzDXvKoGGggOkmjNnPvqZxbcCBXOesFkKYSUVvKgELyuWvdqNWyYpolnZzjFYyBSLYNBbnCWDsdxhRGfivEvkyJQGwuSGTMKfshHJbrSUVyenPRtpntHILzZekKMvtbDqXjJJjxYvKeRcCrZpTuxmllhTislbepKtKkWleZgerLlMdGwlXclLCklRzZQLMXRrwgSrKxXIxtVOzoUKdLIxosSKjqYNSRyQJcYDqJLTHWCcNWopKtOHhWbgiFmkKccqQlvCmMcDfJpLmknHeruONdQxPcdGgRoOrBbniQvvjJVVikVWByfFYCOrHIGJEeBzMhTbBPoOZnXrZBOYoIiOqQXJjWhrBEQFdDypQtjKCIQFjUzPUufbuSjBbcdiKrRZRisFRUyRrnXdYZvQRvQTteEFUxXutObQOeWlLWwejUEYyetTiOLlcBYKkTXFTBGgieFuvsiyZZzJmGYTJnDSkxSyhMpyEozWEkZHgIMDQqbmZeNhuUHRrczpGRNNoLCwrmfMUgGJsSdqRIXCLzpMXcCKuZKkgGWcgqUuhFjpPoUIWKmLgeEtWwFfWcNSnoGjYbPzGgODhfTbzBkPrpHkbrTUIBZeZzmMEPGgpzblfIiBvYJhiOoITxQqXtJnIuRCiJvVnkQzpCYOxgSXfWHVYRSMJPkdsnfzUXEmYsgcTPrxZgMCxTilVvckSseqKEYySJgSejuIiwKYKocbBCjJhMNXxoRYJVPIizqDOvVoFYDHwWPPfJSwJptMmJoMyZUmNguSvluQLswUpFGEQLlbpQSglMYnNShoYIfxwfGoByFLXwLlWxCryNXiIzZmMopKRCdHisEoZHMTtRruUCvVpMoqrjOXxPTtJJeSsgyICcvdDkuUKMbjWyTpLuXyYgGxUyCWWuYzZhUvHqugVYnGcxGtjSftfhBSZZWNLvuJMJIPpHhteOyYFbYymlfeEFLjpvgDEYzrDSbZzcbBoWwOwnDEeUNTccxuKVkweEIqXDEJBbkTrFSeOteEUVSPpsYFexGwLloKkOWRbiIBrlBPFlWBYWROdDexjwDVvMDFIfyzyhOUIUxmzYjSHnIupXQdlJXjxHGgPpSSsQSsOUuQVwjBfhWxEBbepPutsTYunOlHEOeJWeKVFJRxfMvoBbHuUhhHyfuZwJeLzjkKUvVumQZyEsXpCezgvCcFlSsLfVqhbZcliuGWHrRRHyIDjmXdXVvITBsLiIXlWeRKlLkqDijqbEclRTYJgqcxmMXOywNVNuUnvLBbpPfFoOvFsyVdhIeEzZiCYycDKdOmMoXuUxIiovGgugEFpEVQqveFYpiFSYwwpKDKHgHfQqvIeeuuJjUUEyYRrsKvVcQjrrrdTxXoebBEtPbOkhNljqeNYylXJwHQqhSsIinedKTmtKKTRjYPqmxeEzEguMqoRMoDGPWwUuPgxxnUJlzHTLplLJJczBDFPpKqQkjWueEZVRrvzxXcTxmPrRiCnnbmNGgyKgKTgGhehOteUVlQezIeVFYwonREerIPKkUFTdQiEeInqitvVKKHEgiJCSWwkKsMSDCcdcFRpPCHuQMmyWSsqNilxBiXyBbVgPpFKNlEsCdLyYPvHLTjZzJVPpZkwZMVOBbIiUkhvIVwWXOUuoTtuUBZvottEcCmUXYWDdwylQqchbQqpbSeEbimTEBwSqGgBVXxWMTNYyntVvwmEXuZzkrHhFfwoZVLlWxxVvsjJpQURyxklcmoYXVBhNEewWndtsGNCBxVFbBUVFBxJSsGdnqsGGbkCrUgGPGodHTthldDMlMftTeEBbLdkKievKuXMmlWqrtrqTjpPYGIVLiXtCcTUxxWwmWlbFxjGzElHdIiebOZVQYKkyTtfMshQySeqcFLNnEezWImRoMiKXhxKPWnRJWjnzZcTnhvkBIiCTzexZVmfFJLoiRSyLIXrUzXzXLqOyMcpPJKkjbQqBtKiIkyyfFrofnrRiYQvqKkQuWwUgZbBMiIqFhjJNbdDBOUtThoDpxKnNfhLPPVNcThHjgOjYbCJixYyXegnwcCWVNPpjXnvVJjsMiMmGkiMmtGwyjCKYuOSsHPrIStenpzGOibhrxGRMFGRdDrxlUxHhXKCVMHoOEUOJFfjcyZYmMXdDQDksvOzKZzkOqcXxYDdfnqTXRrzGtrvvXrUrsSjjLZzqQPpQIiRKkJjrhOhcQOYOohfcCiIYipPIygdChgCpPWqzNnMiImZfUlqFdfxDJMNrwzlwWJjVpSOnNHMjeVSVOuWKksSoMCSfhDBbIiBbSHTIiKkRmhoFlEMmGKhwBpJbOqYyrqvHuVvclLjnHhdKibtNJjBKbnTQyOoYReDzcqRVzupeEOyCKtGjJlLDWkOmZSMveyqgnwWGgNrLEemsCbKgGulLUklDegSwKkZSsgGIiWoOwzWsEeGPmMKoOYZzClLUxEmMXxDfFTCBnuKkgoORZFNxRvEFfepzwWojbUuZMWeEwXbDkKdfldDpROHyYzoLidDxNiiGWeqPpFQnmkBIigGCMmgXxGcXngKkhoDHvVNndDcHNrIcdwWDlyYWFWWiEeYFVyYvfFdHhbgMFfmrPtdUHCcMgUTOodcDCctPPGqOOTSstxdRJOwtGLlgCRGGgcCibmMBqQVMUlLdYyZKMUuWykpYPpVEEnXxXKZHoGUocUuguUnwGgdDryeEYpIZziSZHglYyZvVPdDWwmpxbrkoTsWlXWKbPJjemqintcCsYqMFtqGeEpNmgwWNYeEyzZnLVvRrZzQrRRDRrdQZgGzqUuuckjEIdVVWlrDZJGncCBBDbjJfocCIlDSMniIwhmMmbQHgiSspCkiIKCFfchirRKMkKmkSdoeWoxXZHjJuEVDdLxXXxITqTPIeHhDWYywfINFDoghpPpHhMpLlmWZrIBySNJdDsKiIlLSscDrUZpZQqTKmMCcmqyMlcCLmCTfzHhzNXbBxnEXDpYyISmEWhtTHNtUzIiZrTqVoSREdOWrtTdQKkqETbBtfFeyxnTTttqReElGxVomMUoULQqGdLwBFYwfGecpnNmfFfiIIeEldJjNxVWIYyiCTtHhxoOLXYjJbBjtTcCoGmOonnuUNNMYnNWHqQrhHKJjsvlUIpPiVfwhDTgNeCnNdOkrHrQPkctrVDBPGgIOrWcCwqQgxUPLpPlpGgMsxHtTYZQSUHpzvQkeEmMcpSCcsfBbFcCnxXMUqcCRjlLdHvVhHhYycDwdWwDLFfqQlEfSWNWdGljJIcCiVtTvkKLOXynnouXxHpPhSixskKJjlLsSPJoKkevwLlXiUyYKiFKRuwTlzNQUewWBtwFtTzRwlLJZzcWmOXuuUCTRrzgWwGHLlBhUicSThPfYytTWDkKdMixQsSqSRrsUBzYgGyvrKmfRrOGJjgjJFviIvVcmXCchyYbLNngQrXOocCxYhFfqhzdLmMKklDUggGWwGscCtXKkTtmIHuUJFyTOoHsbRMcRrClLPuoOiWnNGLgGlMNnuWHGLlgfWDqKuEeHRWwPVsspjdZzrRKcSkGFiDromqQMxXOPIdDfepwmQqfnsCiFckDdGEVvegYCbfSVUxJLBhPpHCGCIIUUuqpzZQYEeyqUuhHPHvVXeEvVGVvgbgGIgGilHLzmMXxVvHLlpFMCXxceQkBbciJlHhtTLscCBXLsbBSnNDHNUfyYFuhTtIqyKkNFfMmtFHhZwmqZzxSLbUuZzPpnZPyfFJUujgsSoKRrMEdCcDdgGxgptXxHYUnNNntwexSjJsbRdDqiMtTcDEFbgGBmMPYDdoCGSclweEWTFGgftIioJPpjkgXsSkKxfcVdKrRkMccTtVTQWwuQxdbKklvDWwdtOtOOWwooiIbBWhiMmPPHPpBwWWLbKTYmMysnNkmWDYVvFedzxPeEcGFdDiMHrRTtsbbvziHdhotEeLlTKkMQxJjXxbQIvVDDdMmkkKYsyXZbcodpMbKbcDCePpHVvhdfNeBbHhQdDIYsmWBeXlwVvWjNDOxXpCYeyYEGxnlLNOsrLlmVvjntTUoJMxXJQqjmcCjpYzZyZbBNFjJiIdvcLsJjEQDHhIdDrCcfYNnmMPRGgrPeELlIUuioOujbBJLmwoYlQqxlNpPnLEeMoOmMYBbFOSHPwfBLffFUOoceRrECbBxXYyuJNtfFTDzKOowRrWWwkjQxCcoORrntMlqQlLqpPtTDWtdDhHcEdDeCBbwyrYeGgEeNvVVPdzZySjoXKkrwXxoqJjPJwWKkjnYdBGCFfFHGNnFMDQqsOoiHhIKTQkvVKqtxPwbiwHmPOWwNbRmlJjLonnNMUnjlNrqpPQnykKYkKtoOwClbGXWgIIIhHiixCOoOodzZlSiIsGgMtXvVxsyNeEnMdDMmJtPpTiPwWplrRLgoJeYyqQuvbMIOpvVPoiNfRfFrFicCPpVeEWoeVvuUERudsudDRTxEeXtrkKZzjqduoMmdfniHrIiRtTiIgzZeBWuUgWwtsSTgZerREzQBRrHXvVOokseESYyKxhOEeorcvzObFjjMwwWWZzsbBZPRWHQMmFfMdMgGuLdDuUlUcLPuEpqYnxWiPYyGgMXXxxqKQcCqgGPjKMgrMJMmSsjmVtTveQTcJTplFfExbiUuIYyBmdDMmWsEeSwrbVvlLBEeuyGwWgzZDgGdYqDhypPbEeGfFSseEYpPytEeXXuUUGzjhrRHUulWJNNnNdDnJlLjnjwLtfFTldiYyfRrFOpMtIiYKEWNjJbywWcSsQqiICKUbIiihHIxXpPoOsSdmxGTtCmoklLKZzOQTtrReEqEeuPchjJUVZeRixXtTsmkKiICcrfxrkROoNNnhHrzYEIiDnNdKNnIlHIHdDJjhVvCGgHhXUUcCccTeDdEhIYySLhsSPDwUQqGLEXxevQqVlHfggGfWhHiIwRKkbBrFfkKfBbGgbBQxpPXGgNeUmmXtcXPhHkxXKQNnqjZzBMYVpCFUxXuTbBuTOwWotfFoOLnNUqQPMSfRRNnHuUkKkUVJOXxVQPbBoHhOQqVvYDdtKkTOocgWwGtTtssONPpBwWIrRiQbXxGtuDdzcNQHhqEenwzYMmTtxCvVgfWHyNqQBbzTMmmMdPptnNUtTuqQzplpPuUdsYylifFbBKkwTFftpzqeuvGgxtTEViyOkKdDzZQRsriIoJjMmORSrDkFfrRzZQqeEsdeDTMRkKrmtdMnDdkOoKqyYQNXpPiSsdmZzMDBbuUqxNnXbBnNzZMmoOZzfItEfoOQiIqgGFeUFBCiIcbzZfPpGtTgVvSjivCcVIdDpcCPGxtMVJjPtIQCcqxBCJjcbyYBPpZcCwWzfFrRbjnNJNlLnCUtTuqQMYyKRrhxueEhodDyFfFdvSsxDdXIgGiZpPzzhlfKsBbSkTtFqMmtpFfjQyYqZqQwCdDYyfFcfNnJjFQhDdHuRrUcwEeWYyUusSChUoOeojPpXPpxJOxuUXqbBKEkhvVqhHbXwWPQOohHbcuzXWwBbxnVBbiIvHBbESsNCQqcniNhtTDdRrjJhHHvrRVGpmYyMJjWOowPrRnSsNGmiBkZzkKuUKYtqdDtcFfCqTtQTQbBmYEeBiIEnNebDdEeyeIiMmYosSOylLEBWmMbxXOSPpDdsGglMmLUdeouZGgzTROortEeiEenliIOwWLhgitTIGlLZsSSsQqVvBbplLVYyHhvJQqjFbxEQmkKyVUEeumxXoOZfbBZqQzFkBbKKkzMvohHxVSsvcCXYJvVPoOpQqjvYJjwWrRimMIBszLljjPpbIVhOopdDPcCHdLlcCQqLTtZzOowWnNJjIiRtvhHlLlLzZiJkjJGtTPlLpgUOounNmEeMJjUugGXLksSKSdlLkWQqwKDwDmMdjuOoUnGgNJHsSUmMulkKOorRLfFIiilnGbNnBXxssSmPpChHciIEeDdMOoEZzmMbBLlkKerRWCcckKCTsSgGtwFfwWiYyBsSgGMmbjJIgGUYyuiIeXYyxlHFDdfjHhjLqQsSlpSsPJSsoWwOMmiIOmkjJBbKKUuLlQkKSsmcBbCCVvcnNznNZgsoOVnNvSGfsSrRFwhQqQzZqINnRriHnbMmglZzLWwOobsKoOhHkQqPpTNUzZBYNnycCGkfFKFflqFfQLQqweEKkjJIkKkKWHhwLlJnHhSuUCcjJwTtWQcCTtqsNUuHryQqYRhOokKhQQqqoOStTxHhXwWsSsHRrqvDdCcVQEelLBxWwXbyTtUpIXhHxiPdDxXvVoOfMmFwWWwBbRrDdcCiIUurlIMmiwbPpdOoDBWzqprRPQiIJjjZzwWJZNnZoIihNnHOzhHtRrdLCclfFXKkxDhLJjlTEetHbsSSssSBWVvsbgGsyYSvtZWRlLrwUuziITVBYRruUQqgGiEewWFfIgvixXIVYyBoBbOboOVHqPpcDdCQhvorRcCrRFolLOdDimcgGCMDMmdRryYMvVmvbxXtTzZNGKkgTTSsttsScCfFefFEeIjwcCFSsfLldtFfmMTDeEWJCCcUDdkKimMIzZkKjJKkbNnBbuUBupTtPQCcqZOTtozJhlLHKkNnyYu";
-
-
-$alphabet = " abcdefghijklmnopqrstuvwxyz";
-$alphabet = " ";
-
-$dataafter = $data;
-$databefore = null;
-//echo $dataafter;
-//echo "<br>";
-
-//$datawithouta = dataclean($data,"a");
-
-$datadata = dataCleanClean($data);
-
-//echo $datawithouta;
-//echo "<br>";
-//echo $datadata;
-//echo "<br>";
-//echo strlen($datadata);
-/*
-for ($alph = 0 ;$alph<strlen($alphabet);$alph++){
-    $letter = substr($alphabet,$alph,1);
-
-    while ($databefore != $dataafter) {
-        $databefore = $dataafter;
-        $dataafter = dataClean($databefore);
-        //echo "final data--".$dataafter;
-        //echo "<br>";
-    }
-
-    if ($letter == " "){
-        $noletter = $dataafter;
-    }
-
-    if (isset($noletter) && !isset($currentlowest)){
-        $currentlowest = strlen($dataafter);
-    }
-    if (strlen($dataafter) < $currentlowest) {
-        $currentlowest = strlen($dataafter);
-        $currentlowestdata = $dataafter;
-        $currentlowestletter = $letter;
-    }
-
-    echo $letter . " has a count of " . strlen($dataafter);
-    echo "<br>";
-    $databefore = null;
-    $dataafter = $data;
-}
-
-//echo "<br>";
-//echo strlen($noletter);
-//echo $currentlowest;
-//echo "<br>";
-//echo $currentlowestletter;
-
-//echo strlen($dataafter);
-*/
-/*
-function dataClean($input,$tocheck = null){
-    for ($dataLoop = 0; $dataLoop < strlen($input); $dataLoop++) {
-        $searchValue = substr($input,$dataLoop,1);
-        $searchValue1 = substr($input,$dataLoop+1,1);
-        if (strtoupper($searchValue)!=strtoupper($tocheck)) {
-            if (strtoupper($searchValue) == strtoupper($searchValue1)) {
-                if ($searchValue != $searchValue1) {
-                    $dataLoop = $dataLoop + 1;
-                } else {
-                    $outputvalue = $outputvalue . $searchValue;
-                }
-            } else {
-                $outputvalue = $outputvalue . $searchValue;
-            }
-        }
-    }
-    return $outputvalue;
-}
-
-
-function dataCleanClean($input) {
-
-    $dataafter = $input;
-    $databefore = null;
-    while ($databefore != $dataafter) {
-        for($chunk = 0;$chunk < strlen($dataafter);$chunk++){
-            if(substr($dataafter,$chunk,1)!=substr($databefore,$chunk,1)) {
-                if ($cleaned = 1) {
-                    $dataclean = dataClean(substr($dataafter,$chunk));
-                    $databefore = $dataafter;
-                    $dataafter = substr($dataafter,0,$chunk). $dataclean;
-                    echo "final data--".$dataafter;
-                    echo "<br>";
-                    $cleaned = 1;
-                }
-            }
-            $cleaned = 0;
-        }
-        $dataafter = dataClean($dataafter);
-    }
-    $databefore = null;
-
-    return $dataafter;
-}
-*/
-
-$REACTING_UNITS = array(
-    'aA', 'Aa', 'bB', 'Bb', 'cC', 'Cc', 'dD', 'Dd', 'eE', 'Ee', 'fF', 'Ff', 'gG', 'Gg',
-    'hH', 'Hh', 'iI', 'Ii', 'jJ', 'Jj', 'kK', 'Kk', 'lL', 'Ll', 'mM', 'Mm', 'nN', 'Nn',
-    'oO', 'Oo', 'pP', 'Pp', 'qQ', 'Qq', 'rR', 'Rr', 'sS', 'Ss', 'tT', 'Tt', 'uU', 'Uu',
-    'vV', 'Vv', 'wW', 'Ww', 'xX', 'Xx', 'yY', 'Yy', 'zZ', 'Zz',
+$data =array(
+    "1, 1",
+"1, 6",
+"8, 3",
+"3, 4",
+"5, 5",
+"8, 9"
 );
+$maxx=0;
+$maxy=0;
+foreach ($data as $key => $value) {
+    $strip = preg_split("/,/",$value);
+    $output[] = array(intval($strip[0]),intval($strip[1]));
+    $maxx = max($maxx,intval($strip[0]));
+    $maxy = max($maxy,intval($strip[1]));
+}
+$data = $output;
 
-function reduced_length($polymer,$REACTING_UNITS)
-{
-    do {
-        $polymer = str_replace($REACTING_UNITS, '', $polymer, $count);
-    } while ($count > 0);
 
-    return strlen($polymer);
+*/
+//Test data end
+
+
+function calcdist($input,$compare) {
+    $x = $input[0];
+    $y = $input[1];
+    $x1 = $compare[0];
+    $y1 = $compare[1];
+    $dist = (max($x,$x1) - min($x,$x1)) + (max($y,$y1) - min($y,$y1));
+    return $dist;
 }
 
-$input = $data;
+$minfound = PHP_INT_MAX;
+$distcount = 0;
+for ($x1 = 0;$x1<($maxx+1);$x1++){
+    for ($y1 = 0;$y1<($maxy+1);$y1++){
+        $xy = array($x1,$y1);
+        foreach($data as $key=>$value) {
+            $dist = calcdist($value,$xy);
+            $x = $value[0];
+            $y = $value[1];
+            $distcount = $distcount + $dist;
+            if ($minfound>$dist){
+                $minfound = $dist;
+                $outputarray[$y1][$x1] = $key;
+            } elseif ($minfound==$dist){
+                $outputarray[$y1][$x1] = ".";
+            }
+        }
+        $outputcount[$outputarray[$y1][$x1]]=$outputcount[$outputarray[$y1][$x1]]+1;
+        $newarray[$y1][$x1]=$distcount;
+        $distcount = 0;
+        $minfound = PHP_INT_MAX;
+    }
+}
 
-echo reduced_length($input,$REACTING_UNITS);
+$minfound = PHP_INT_MAX;
+for ($x1 = -100;$x1<($maxx+100);$x1++){
+    for ($y1 = -100;$y1<($maxy+100);$y1++){
+        $xy = array($x1,$y1);
+        foreach($data as $key=>$value) {
+            $dist = calcdist($value,$xy);
+            $x = $value[0];
+            $y = $value[1];
+            if ($minfound>$dist){
+                $minfound = $dist;
+                $outputarray1[$y1][$x1] = $key;
+            } elseif ($minfound==$dist){
+                $outputarray1[$y1][$x1] = ".";
+            }
+        }
+        $outputcount1[$outputarray1[$y1][$x1]]=$outputcount1[$outputarray1[$y1][$x1]]+1;
+        $minfound = PHP_INT_MAX;
+    }
+}
+
+ksort($outputcount);
+ksort($outputcount1);
+
+foreach ($outputcount as $key=>$value) {
+    if ($value==$outputcount1[$key]) {
+        echo $key."--".$value."--".$outputcount1[$key];
+        echo "<br>";
+        $maxvalue = max($maxvalue,$value);
+    }
+}
+
+echo $maxvalue;
 echo "<br>";
-$shortest = PHP_INT_MAX;
 
-foreach (range('a', 'z') as $troublemaker) {
-    $test = array($troublemaker, strtoupper($troublemaker));
-    $polymer = str_replace($test, '', $input);
-    $shortest = min($shortest, reduced_length($polymer,$REACTING_UNITS));
+foreach ($newarray as $keyx=>$valuex) {
+    foreach ($valuex as $keyy=>$valuey) {
+        if ($valuey<10000) {
+            $valcount = $valcount +1;
+        }
+    }
 }
-
-
-//fwrite(STDOUT, $shortest . PHP_EOL);
-echo $shortest;
-
+echo $valcount;
+echo "<br>";
 
 ?>
